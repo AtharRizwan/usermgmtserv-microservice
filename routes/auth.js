@@ -6,11 +6,11 @@ const router = express.Router();
 
 // Register User
 router.post('/register', async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, password } = req.body;
 
     try {
         // Check if user exists
-        let user = await User.findOne({ email });
+        let user = await User.findOne({ username });
         if (user) return res.status(400).json({ message: 'User already exists' });
 
         // Hash password
@@ -18,7 +18,7 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // Save user
-        user = new User({ username, email, password: hashedPassword });
+        user = new User({ username, password: hashedPassword });
         await user.save();
 
         res.status(201).json({ message: 'User registered successfully' });
@@ -29,11 +29,11 @@ router.post('/register', async (req, res) => {
 
 // Login User
 router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     try {
         // Check if user exists
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ username });
         if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
         // Validate password
@@ -47,17 +47,5 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
-
-// // Get User Info
-// router.get('/user/:id', async (req, res) => {
-//     try {
-//         const user = await User.findById(req.params.id).select('-password');
-//         if (!user) return res.status(404).json({ message: 'User not found' });
-
-//         res.json(user);
-//     } catch (err) {
-//         res.status(500).json({ message: 'Server error' });
-//     }
-// });
 
 module.exports = router;
