@@ -7,6 +7,13 @@ const connectDB = require('./config/db');
 
 dotenv.config();
 
+// Fail fast on missing configuration
+const missingEnv = ['MONGO_URI', 'JWT_SECRET'].filter((key) => !process.env[key]);
+if (missingEnv.length) {
+    console.error(`Missing required environment variables: ${missingEnv.join(', ')}`);
+    process.exit(1);
+}
+
 const app = express();
 connectDB();
 
